@@ -64,6 +64,9 @@ class cache_page(object):
             ...
 
     """
+
+    __name__ = 'cache_page'
+
     def __init__(self, arg=None):
         if callable(arg):
             # we are called with a function as argument; e.g., as a bare
@@ -108,7 +111,7 @@ class cache_page(object):
             response = self.f(request, *args, **kwargs)
             if response_is_cacheable(request, response):
                 debug("storing!")
-                cache.set(key, response.content, self.time)
+                cache.set(key, response.render().content, self.time)
                 response["ETag"] = key
             else:
                 debug("Not storable.")
