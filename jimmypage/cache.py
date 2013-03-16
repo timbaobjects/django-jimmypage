@@ -158,7 +158,7 @@ def request_is_cacheable(request):
 def response_is_cacheable(request, response):
     return (not DISABLED) and \
         response.status_code == 200 and \
-        response.get('Content-Type', 'text/html') == 'text/html' and \
+        'text/html' in response.get('Content-Type', 'text/html') and \
         response.get('Pragma', None) != "no-cache" and \
         response.get('Vary', None) != "Cookie" and \
         not request.META.get("CSRF_COOKIE_USED", None)
