@@ -125,10 +125,11 @@ class cache_page(object):
         return self.f(request, *args, **kwargs)
 
 def get_cache_key(request):
-    user_id = "" 
+    session_id = user_id = ""
     try:
         if request.user.is_authenticated():
             user_id = str(request.user.id)
+            session_id = str(request.session.session_key)
     except AttributeError: # e.g. if auth is not installed
         pass
     
@@ -139,6 +140,7 @@ def get_cache_key(request):
         urlencode(request.GET),
         translation.get_language(),
         user_id,
+        session_id,
     ]
     suffix_function = getattr(settings, 'JIMMY_PAGE_SUFFIX_FUNCTION', None)
     if suffix_function and callable(suffix_function):
