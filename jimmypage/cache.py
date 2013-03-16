@@ -111,7 +111,11 @@ class cache_page(object):
             response = self.f(request, *args, **kwargs)
             if response_is_cacheable(request, response):
                 debug("storing!")
-                cache.set(key, response.render().content, self.time)
+                try:
+                    response.render()
+                except AttributeError:
+                    pass
+                cache.set(key, response.content, self.time)
                 response["ETag"] = key
             else:
                 debug("Not storable.")
@@ -154,6 +158,7 @@ def request_is_cacheable(request):
 def response_is_cacheable(request, response):
     return (not DISABLED) and \
         response.status_code == 200 and \
+        response.get('Content-Type', 'text/html') == 'text/html' and \
         response.get('Pragma', None) != "no-cache" and \
         response.get('Vary', None) != "Cookie" and \
         not request.META.get("CSRF_COOKIE_USED", None)
